@@ -72,38 +72,42 @@ export function AppShell({ token, currency }: { token: string; currency: string 
 
   return (
     <div className="app-shell" style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside className="lux-sidebar" style={{ width: 240, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        <div style={{ color: '#d4af6a', fontWeight: 900, fontSize: '1.1rem', padding: '0.5rem 0.7rem 1.4rem' }}>
+      <aside className="lux-sidebar app-sidebar" style={{ width: 240, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        <div className="sidebar-brand" style={{ color: '#d4af6a', fontWeight: 900, fontSize: '1.1rem', padding: '0.5rem 0.7rem 1.4rem' }}>
           {t('brand.name')}
         </div>
-        {navItems.map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setView(item.key)}
-            className="btn"
-            style={{
-              justifyContent: 'flex-start',
-              background: view === item.key ? 'rgba(212,175,106,0.12)' : 'transparent',
-              border: 'none',
-              color: view === item.key ? '#d4af6a' : 'rgba(236,231,219,0.7)',
-            }}
-          >
-            {item.icon} {item.label}
+        <div className="sidebar-nav-row">
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setView(item.key)}
+              className="btn"
+              style={{
+                justifyContent: 'flex-start',
+                background: view === item.key ? 'rgba(212,175,106,0.12)' : 'transparent',
+                border: 'none',
+                color: view === item.key ? '#d4af6a' : 'rgba(236,231,219,0.7)',
+              }}
+            >
+              {item.icon} <span className="nav-label">{item.label}</span>
+            </button>
+          ))}
+        </div>
+        <div className="sidebar-spacer" style={{ flex: 1 }} />
+        <div className="sidebar-nav-row sidebar-nav-row-bottom">
+          <button className="btn" style={{ justifyContent: 'flex-start', border: 'none' }} onClick={() => setSettingsOpen(true)}>
+            <SettingsIcon size={18} /> <span className="nav-label">{t('nav.settings')}</span>
           </button>
-        ))}
-        <div style={{ flex: 1 }} />
-        <button className="btn" style={{ justifyContent: 'flex-start', border: 'none' }} onClick={() => setSettingsOpen(true)}>
-          <SettingsIcon size={18} /> {t('nav.settings')}
-        </button>
-        <button className="btn" style={{ justifyContent: 'flex-start', border: 'none' }} onClick={toggleLang}>
-          {t('lang.toggle')}
-        </button>
-        <button className="btn btn-danger" style={{ justifyContent: 'flex-start' }} onClick={handleLogout}>
-          <LogOut size={18} /> {t('action.logout')}
-        </button>
+          <button className="btn" style={{ justifyContent: 'flex-start', border: 'none' }} onClick={toggleLang}>
+            {t('lang.toggle')}
+          </button>
+          <button className="btn btn-danger" style={{ justifyContent: 'flex-start' }} onClick={handleLogout}>
+            <LogOut size={18} /> <span className="nav-label">{t('action.logout')}</span>
+          </button>
+        </div>
       </aside>
 
-      <main className="view-enter" style={{ flex: 1, padding: '2rem', maxWidth: 1100 }}>
+      <main className="view-enter app-main" style={{ flex: 1, padding: '2rem', maxWidth: 1100 }}>
         {loading ? (
           <p style={{ color: '#8a8f9c' }}>...</p>
         ) : view === 'dashboard' ? (

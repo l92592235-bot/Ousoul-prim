@@ -53,8 +53,8 @@ export function SettingsModal({
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-      <div className="glass-panel settings-modal-box" style={{ padding: '1.6rem', width: '100%', maxWidth: 460, display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem', boxSizing: 'border-box' }}>
+      <div className="glass-panel settings-modal-box" style={{ padding: '1.6rem', width: '100%', maxWidth: 460, maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.4rem', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ color: '#d4af6a', fontSize: '1.1rem' }}>{t('settings.title')}</h2>
           <button className="btn" onClick={onClose}>{t('action.close')}</button>

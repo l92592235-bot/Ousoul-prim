@@ -199,6 +199,65 @@ html, body {
   border-color: var(--hairline);
 }
 
+/* ---------- Responsive layout (mobile & tablet) ---------- */
+@media (max-width: 860px) {
+  .app-shell {
+    flex-direction: column !important;
+    min-height: auto !important;
+  }
+  .app-sidebar {
+    width: 100% !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    padding: 0.6rem 0.7rem !important;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .app-sidebar .sidebar-brand {
+    padding: 0.2rem 0.5rem !important;
+    font-size: 0.95rem !important;
+    flex-shrink: 0;
+  }
+  .app-sidebar .sidebar-nav-row {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.3rem !important;
+    flex-shrink: 0;
+  }
+  .app-sidebar .sidebar-nav-row .btn {
+    padding: 0.5rem 0.6rem !important;
+    font-size: 0.78rem !important;
+    white-space: nowrap;
+  }
+  .app-sidebar .sidebar-nav-row .nav-label {
+    display: none;
+  }
+  .app-sidebar .sidebar-spacer {
+    display: none !important;
+  }
+  .app-sidebar .sidebar-nav-row-bottom {
+    margin-inline-start: auto;
+  }
+  .app-main {
+    padding: 1rem !important;
+    max-width: 100% !important;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-main {
+    padding: 0.75rem !important;
+  }
+  .glass-panel {
+    border-radius: 0.75rem !important;
+  }
+}
+
 .lux-nav-item.active::before {
   content: '';
   position: absolute;

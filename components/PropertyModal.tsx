@@ -32,8 +32,8 @@ export function PropertyModal({
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-      <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '1.6rem', width: '100%', maxWidth: 480, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem', boxSizing: 'border-box' }}>
+      <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '1.6rem', width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.8rem', boxSizing: 'border-box' }}>
         <h2 style={{ color: '#d4af6a', fontSize: '1.1rem' }}>
           {property ? t('action.edit') : t('properties.add')}
         </h2>
