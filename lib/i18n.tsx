@@ -82,7 +82,7 @@ const AR: Dict = {
   'contract.field.deadline.hint': 'هذا هو تاريخ انتهاء أو استحقاق العقد (وليس تاريخ البداية).',
   'contract.field.status': 'حالة العقد',
   'contract.field.alertDays': 'التنبيه قبل الانتهاء (بعدد الأيام)',
-  'contract.field.alertDays.hint': 'مثال: إذا كتبت 30، سيصلك تنبيه قبل 30 يومًا من تاريخ الانتهاء أعلاه. هذا الرقم ليس مدة العقد.',
+  'contract.field.alertDays.hint': '',
   'contract.field.notifyEmail': 'البريد الإلكتروني للتنبيه',
   'contract.field.notes': 'ملاحظات',
   'contract.type.lease': 'إيجار',

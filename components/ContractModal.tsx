@@ -115,10 +115,8 @@ export function ContractModal({
         <label style={fieldLabelStyle}>{t('contract.field.startDate')}</label>
         <input className="input" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         <label style={fieldLabelStyle}>{t('contract.field.deadline')}</label>
-        <p style={fieldHintStyle}>{t('contract.field.deadline.hint')}</p>
         <input className="input" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
         <label style={fieldLabelStyle}>{t('contract.field.alertDays')}</label>
-        <p style={fieldHintStyle}>{t('contract.field.alertDays.hint')}</p>
         <input className="input" type="number" placeholder={t('contract.field.alertDays')} value={alertDays} onChange={(e) => setAlertDays(e.target.value)} />
         <label style={fieldLabelStyle}>{t('contract.field.notifyEmail')}</label>
         <input className="input" type="email" placeholder={t('contract.field.notifyEmail')} value={notifyEmail} onChange={(e) => setNotifyEmail(e.target.value)} />
