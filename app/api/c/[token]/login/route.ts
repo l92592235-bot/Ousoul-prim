@@ -3,6 +3,9 @@ import { sql } from '@/lib/db';
 import { getClientByToken, createSession } from '@/lib/auth';
 import { verifyPassword } from '@/lib/crypto';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const MAX_ATTEMPTS = 5;
 const LOCK_MINUTES = 15;
 

@@ -3,6 +3,9 @@ import { sql } from '@/lib/db';
 import { randomToken } from '@/lib/crypto';
 import { isAdminAuthorized } from '@/lib/admin';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: NextRequest) {
   if (!isAdminAuthorized(req)) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const rows = await sql`

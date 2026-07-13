@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getClientByToken } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(_req: NextRequest, { params }: { params: { token: string } }) {
   const client = await getClientByToken(params.token);
   if (!client || !client.setup_complete) {

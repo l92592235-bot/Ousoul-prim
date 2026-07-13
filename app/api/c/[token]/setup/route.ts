@@ -3,6 +3,9 @@ import { sql } from '@/lib/db';
 import { getClientByToken, createSession } from '@/lib/auth';
 import { hashPassword } from '@/lib/crypto';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(req: NextRequest, { params }: { params: { token: string } }) {
   const client = await getClientByToken(params.token);
   if (!client) return NextResponse.json({ error: 'not_found' }, { status: 404 });

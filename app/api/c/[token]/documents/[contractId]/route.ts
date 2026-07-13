@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getAuthedClient } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const MAX_SIZE = 15 * 1024 * 1024; // 15MB
 
 export async function GET(_req: NextRequest, { params }: { params: { token: string; contractId: string } }) {

@@ -3,6 +3,9 @@ import { sql } from '@/lib/db';
 import { getAuthedClient } from '@/lib/auth';
 import { verifyPassword, hashPassword } from '@/lib/crypto';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(req: NextRequest, { params }: { params: { token: string } }) {
   const client = await getAuthedClient(params.token);
   if (!client) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

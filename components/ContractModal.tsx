@@ -128,7 +128,9 @@ export function ContractModal({
             )}
           </div>
           {!savedContractId ? (
-            <p style={{ color: '#8a8f9c', fontSize: '0.8rem' }}>{t('contract.documents.saveFirst')}</p>
+            <p style={{ color: '#d4af6a', fontSize: '0.8rem', background: 'rgba(212,175,106,0.08)', padding: '0.6rem 0.7rem', borderRadius: '0.5rem', lineHeight: 1.6 }}>
+              {t('contract.documents.saveFirst')}
+            </p>
           ) : docs.length === 0 ? (
             <p style={{ color: '#8a8f9c', fontSize: '0.8rem' }}>{t('contract.documents.empty')}</p>
           ) : (
@@ -152,7 +154,9 @@ export function ContractModal({
             {savedContractId && !contract ? t('action.done') : t('action.cancel')}
           </button>
           {!(savedContractId && !contract) && (
-            <button type="submit" disabled={busy} className="btn btn-primary">{t('action.save')}</button>
+            <button type="submit" disabled={busy} className="btn btn-primary">
+              {!contract ? t('contract.action.saveAndAttach') : t('action.save')}
+            </button>
           )}
         </div>
       </form>
