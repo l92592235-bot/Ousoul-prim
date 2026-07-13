@@ -29,8 +29,8 @@ export async function POST(req: NextRequest, { params }: { params: { token: stri
   }
 
   const rows = await sql`
-    INSERT INTO contracts (client_id, property_id, title, contract_type, party_name, deadline, alert_days, notify_email, status, notes)
-    VALUES (${client.id}, ${b?.propertyId ?? null}, ${title}, ${b?.contractType || 'lease'}, ${partyName}, ${deadline}, ${b?.alertDays ?? 30}, ${b?.notifyEmail || client.email}, ${b?.status || 'active'}, ${b?.notes || null})
+    INSERT INTO contracts (client_id, property_id, title, contract_type, party_name, start_date, deadline, alert_days, notify_email, status, notes)
+    VALUES (${client.id}, ${b?.propertyId ?? null}, ${title}, ${b?.contractType || 'lease'}, ${partyName}, ${b?.startDate || null}, ${deadline}, ${b?.alertDays ?? 30}, ${b?.notifyEmail || client.email}, ${b?.status || 'active'}, ${b?.notes || null})
     RETURNING *
   `;
   await sql`INSERT INTO activity_log (client_id, action_type, entity_label) VALUES (${client.id}, 'created_contract', ${title})`;

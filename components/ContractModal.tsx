@@ -6,6 +6,9 @@ import { Paperclip, Trash2, Upload } from 'lucide-react';
 
 type DocRow = { id: number; file_name: string; mime_type: string; file_size: number; uploaded_at: string };
 
+const fieldLabelStyle: React.CSSProperties = { color: '#d4af6a', fontSize: '0.78rem', marginBottom: '-0.4rem', opacity: 0.85 };
+const fieldHintStyle: React.CSSProperties = { color: '#8a8f9c', fontSize: '0.72rem', margin: '-0.3rem 0 0' };
+
 export function ContractModal({
   token, contract, properties, onClose, onSaved,
 }: { token: string; contract: Contract | null; properties: Property[]; onClose: () => void; onSaved: () => void }) {
@@ -14,6 +17,7 @@ export function ContractModal({
   const [title, setTitle] = useState(contract?.title ?? '');
   const [contractType, setContractType] = useState(contract?.contract_type ?? 'lease');
   const [partyName, setPartyName] = useState(contract?.party_name ?? '');
+  const [startDate, setStartDate] = useState(contract?.start_date ? contract.start_date.slice(0, 10) : '');
   const [deadline, setDeadline] = useState(contract?.deadline ? contract.deadline.slice(0, 10) : '');
   const [alertDays, setAlertDays] = useState(contract ? String(contract.alert_days) : '30');
   const [notifyEmail, setNotifyEmail] = useState(contract?.notify_email ?? '');
@@ -91,11 +95,14 @@ export function ContractModal({
         <h2 style={{ color: '#d4af6a', fontSize: '1.1rem' }}>
           {contract ? t('action.edit') : t('contracts.add')}
         </h2>
+        <label style={fieldLabelStyle}>{t('contract.field.property')}</label>
         <select className="select" value={propertyId} onChange={(e) => setPropertyId(e.target.value)}>
           <option value="">{t('contract.field.property.none')}</option>
           {properties.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
+        <label style={fieldLabelStyle}>{t('contract.field.title')}</label>
         <input className="input" placeholder={t('contract.field.title')} value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <label style={fieldLabelStyle}>{t('contract.field.type')}</label>
         <select className="select" value={contractType} onChange={(e) => setContractType(e.target.value)}>
           <option value="lease">{t('contract.type.lease')}</option>
           <option value="insurance">{t('contract.type.insurance')}</option>
@@ -103,16 +110,26 @@ export function ContractModal({
           <option value="management">{t('contract.type.management')}</option>
           <option value="other">{t('contract.type.other')}</option>
         </select>
+        <label style={fieldLabelStyle}>{t('contract.field.party')}</label>
         <input className="input" placeholder={t('contract.field.party')} value={partyName} onChange={(e) => setPartyName(e.target.value)} required />
+        <label style={fieldLabelStyle}>{t('contract.field.startDate')}</label>
+        <input className="input" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        <label style={fieldLabelStyle}>{t('contract.field.deadline')}</label>
+        <p style={fieldHintStyle}>{t('contract.field.deadline.hint')}</p>
         <input className="input" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
+        <label style={fieldLabelStyle}>{t('contract.field.alertDays')}</label>
+        <p style={fieldHintStyle}>{t('contract.field.alertDays.hint')}</p>
         <input className="input" type="number" placeholder={t('contract.field.alertDays')} value={alertDays} onChange={(e) => setAlertDays(e.target.value)} />
+        <label style={fieldLabelStyle}>{t('contract.field.notifyEmail')}</label>
         <input className="input" type="email" placeholder={t('contract.field.notifyEmail')} value={notifyEmail} onChange={(e) => setNotifyEmail(e.target.value)} />
+        <label style={fieldLabelStyle}>{t('contract.field.status')}</label>
         <select className="select" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="active">{t('contract.status.active')}</option>
           <option value="renewed">{t('contract.status.renewed')}</option>
           <option value="expired">{t('contract.status.expired')}</option>
           <option value="cancelled">{t('contract.status.cancelled')}</option>
         </select>
+        <label style={fieldLabelStyle}>{t('contract.field.notes')}</label>
         <textarea className="textarea" placeholder={t('contract.field.notes')} value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
 
         <div style={{ borderTop: '1px solid rgba(212,175,106,0.14)', paddingTop: '0.8rem', marginTop: '0.2rem' }}>

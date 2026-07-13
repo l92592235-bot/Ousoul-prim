@@ -17,6 +17,7 @@ export interface Contract {
   title: string;
   contract_type: string;
   party_name: string;
+  start_date: string | null;
   deadline: string;
   alert_days: number;
   notify_email: string | null;

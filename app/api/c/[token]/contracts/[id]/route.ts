@@ -23,6 +23,7 @@ export async function PUT(req: NextRequest, { params }: { params: { token: strin
       title = ${title},
       contract_type = ${b?.contractType || 'lease'},
       party_name = ${partyName},
+      start_date = ${b?.startDate || null},
       deadline = ${deadline},
       alert_days = ${b?.alertDays ?? 30},
       notify_email = ${b?.notifyEmail || client.email},

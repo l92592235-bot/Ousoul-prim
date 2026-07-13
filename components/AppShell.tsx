@@ -206,7 +206,8 @@ export function AppShell({ token, currency }: { token: string; currency: string 
                     <div>
                       <div style={{ color: '#ece7db', fontWeight: 600 }}>{c.title}</div>
                       <div style={{ fontSize: '0.8rem', color: 'rgba(236,231,219,0.55)' }}>
-                        {c.party_name} {c.property_name ? `· ${c.property_name}` : ''} · {new Date(c.deadline).toLocaleDateString(lang === 'ar' ? 'ar-SA' : 'en-US')}
+                        {c.party_name} {c.property_name ? `· ${c.property_name}` : ''} · {t('contract.list.endLabel')} {new Date(c.deadline).toLocaleDateString(lang === 'ar' ? 'ar-SA' : 'en-US')}
+                        {c.start_date ? ` (${t('contract.list.startLabel')} ${new Date(c.start_date).toLocaleDateString(lang === 'ar' ? 'ar-SA' : 'en-US')})` : ''}
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
