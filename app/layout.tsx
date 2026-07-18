@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import SWRegister from '../components/SWRegister';
 
 export const metadata: Metadata = {
   title: 'أصول برايم | Osoul Prime',
