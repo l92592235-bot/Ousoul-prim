@@ -1,113 +1,376 @@
 <!doctype html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="LG Developments — حلول وتطبيقات رقمية متطورة." />
-  <title>LG Developments | تطبيقات رقمية متطورة</title>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <title>الحاسبة الذكية</title>
   <style>
-    html { scroll-behavior: smooth; }
-    body { font-family: Tahoma, Arial, sans-serif; }
-    .hero-grid { background-image: radial-gradient(circle at 20% 20%, color-mix(in oklab, var(--color-primary) 17%, transparent), transparent 35%), radial-gradient(circle at 82% 50%, color-mix(in oklab, var(--color-secondary) 13%, transparent), transparent 32%); }
-    .soft-border { border: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent); }
-    .floating-whatsapp { position: fixed; inset-inline-start: 1.25rem; bottom: 1.25rem; z-index: 20; }
+    * { box-sizing: border-box; }
+    :root { font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--color-base-content, CanvasText);
+      background: var(--color-base-100, Canvas); display: grid; place-items: center;
+      padding: 18px; overflow-x: hidden;
+    }
+    button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+    .shell { width: min(100%, 430px); display: grid; gap: 14px; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .toolbar-actions { display: flex; align-items: center; gap: 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.02em; }
+    .logo {
+      width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center;
+      color: var(--color-primary-content, ButtonText); background: var(--color-primary, Highlight);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--color-primary, Highlight) 28%, transparent);
+    }
+    .icon-btn {
+      width: 42px; height: 42px; border: 0; border-radius: 13px; cursor: pointer;
+      background: var(--color-base-200, ButtonFace); display: grid; place-items: center;
+      transition: transform .14s ease, background .14s ease;
+    }
+    .icon-btn:hover { background: var(--color-base-300, ButtonFace); }
+    .icon-btn:active { transform: scale(.94); }
+    .calculator {
+      border-radius: 30px; padding: 18px; background: var(--color-base-200, ButtonFace);
+      border: 1px solid color-mix(in srgb, var(--color-base-content, CanvasText) 9%, transparent);
+      box-shadow: 0 24px 70px color-mix(in srgb, var(--color-base-content, CanvasText) 12%, transparent);
+    }
+    .screen {
+      min-height: 150px; border-radius: 22px; background: var(--color-base-100, Canvas);
+      padding: 18px 20px; display: flex; flex-direction: column; justify-content: flex-end;
+      text-align: left; direction: ltr; overflow: hidden; border: 1px solid color-mix(in srgb, var(--color-base-content, CanvasText) 7%, transparent);
+    }
+    .expression {
+      min-height: 25px; color: color-mix(in srgb, var(--color-base-content, CanvasText) 54%, transparent);
+      font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .result {
+      font-size: clamp(2.3rem, 11vw, 4.25rem); line-height: 1.1; font-weight: 750;
+      letter-spacing: -.055em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-variant-numeric: tabular-nums;
+    }
+    .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; direction: ltr; }
+    .key {
+      border: 0; min-height: 64px; border-radius: 19px; cursor: pointer; font-size: 1.18rem; font-weight: 700;
+      background: var(--color-base-100, Canvas); box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--color-base-content, CanvasText) 7%, transparent);
+      transition: transform .11s ease, filter .11s ease; user-select: none;
+    }
+    .key:hover { filter: brightness(.97); }
+    .key:active, .key.pressed { transform: scale(.93); filter: brightness(.92); }
+    .key.utility { color: var(--color-secondary-content, ButtonText); background: var(--color-secondary, ButtonFace); }
+    .key.operator { color: var(--color-primary-content, ButtonText); background: var(--color-primary, Highlight); font-size: 1.5rem; }
+    .key.equals { color: var(--color-primary-content, ButtonText); background: var(--color-primary, Highlight); font-size: 1.55rem; }
+    .key.zero { grid-column: span 2; }
+    .hint { text-align: center; font-size: .78rem; color: color-mix(in srgb, var(--color-base-content, CanvasText) 48%, transparent); }
+    .history-panel {
+      position: fixed; inset: 0; z-index: 20; display: grid; align-items: end;
+      background: color-mix(in srgb, var(--color-neutral, CanvasText) 45%, transparent);
+      opacity: 0; visibility: hidden; transition: opacity .2s ease;
+    }
+    .history-panel.open { opacity: 1; visibility: visible; }
+    .history-card {
+      width: min(100%, 520px); max-height: min(76vh, 650px); margin-inline: auto; overflow: auto;
+      background: var(--color-base-100, Canvas); border-radius: 28px 28px 0 0; padding: 20px;
+      transform: translateY(30px); transition: transform .22s ease;
+    }
+    .history-panel.open .history-card { transform: translateY(0); }
+    .history-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .history-head h2 { margin: 0; font-size: 1.1rem; }
+    .history-actions { display: flex; gap: 8px; }
+    .small-btn { border: 0; border-radius: 10px; padding: 9px 12px; cursor: pointer; background: var(--color-base-200, ButtonFace); font-weight: 700; }
+    .small-btn.danger { color: var(--color-error, CanvasText); }
+    .history-list { display: grid; gap: 9px; }
+    .history-item {
+      width: 100%; border: 0; border-radius: 15px; padding: 13px 15px; text-align: left; direction: ltr;
+      cursor: pointer; background: var(--color-base-200, ButtonFace); display: grid; gap: 4px;
+    }
+    .history-item span { color: color-mix(in srgb, var(--color-base-content, CanvasText) 55%, transparent); font-size: .83rem; }
+    .history-item strong { font-size: 1.15rem; }
+    .empty { text-align: center; padding: 40px 10px; color: color-mix(in srgb, var(--color-base-content, CanvasText) 50%, transparent); }
+    .toast {
+      position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 20px); opacity: 0;
+      background: var(--color-neutral, CanvasText); color: var(--color-neutral-content, Canvas);
+      border-radius: 13px; padding: 10px 15px; font-size: .86rem; pointer-events: none; transition: .2s ease; z-index: 30;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-height: 690px) {
+      body { padding: 10px 16px; }
+      .shell { gap: 8px; }
+      .calculator { padding: 13px; border-radius: 24px; }
+      .screen { min-height: 105px; }
+      .key { min-height: 49px; border-radius: 15px; }
+      .keys { gap: 7px; margin-top: 10px; }
+      .hint { display: none; }
+    }
   </style>
 </head>
-<body class="bg-base-100 text-base-content">
-  <a href="#main" class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4 focus:z-50">انتقل إلى المحتوى</a>
-
-  <header class="sticky top-0 z-10 border-b border-base-content/10 bg-base-100/90 backdrop-blur">
-    <nav class="navbar mx-auto max-w-6xl px-4 lg:px-8" aria-label="التنقل الرئيسي">
-      <a href="#home" class="flex items-center gap-3" aria-label="الصفحة الرئيسية">
-        <span class="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-content font-bold">LG</span>
-        <span class="leading-tight"><strong class="block">LG Developments</strong><small class="text-base-content/60">حلول رقمية ذكية</small></span>
-      </a>
-      <div class="hidden gap-2 md:flex">
-        <a class="btn btn-ghost btn-sm" href="#solutions">كيف نعمل</a>
-        <a class="btn btn-ghost btn-sm" href="#why-us">لماذا نحن</a>
-        <a class="btn btn-ghost btn-sm" href="#contact">تواصل</a>
-      </div>
-      <a class="btn btn-primary btn-sm -translate-x-4" href="https://wa.me/97455208186" target="_blank" rel="noopener">ابدأ الآن</a>
-    </nav>
-  </header>
-
-  <main id="main">
-    <section id="home" class="hero-grid overflow-hidden border-b border-base-content/10">
-      <div class="mx-auto grid max-w-6xl gap-12 px-4 py-20 lg:grid-cols-2 lg:items-center lg:px-8 lg:py-28">
-        <div class="space-y-6">
-          <div class="badge badge-secondary badge-outline gap-2 p-3">تطبيقات جاهزة للبيع</div>
-          <h1 class="text-4xl font-black leading-tight sm:text-5xl">تطبيقات <span class="text-primary">جاهزة للبيع</span> لأعمالك</h1>
-          <p class="max-w-xl text-lg leading-8 text-base-content/70">في LG Developments نوفر تطبيقات مكتملة وجاهزة للبيع. اختر التطبيق المناسب لنشاطك وتواصل معنا لامتلاكه.</p>
-          <div class="flex flex-wrap gap-3">
-            <a href="https://wa.me/97455208186" target="_blank" rel="noopener" class="btn btn-primary">تحدث معنا عبر واتساب <span aria-hidden="true">←</span></a>
-            <a href="#solutions" class="btn btn-outline">شاهد التطبيقات الجاهزة</a>
-          </div>
-          <div class="flex flex-wrap gap-x-7 gap-y-3 pt-3 text-sm text-base-content/70">
-            <span>✓ تصميم واضح</span><span>✓ أداء موثوق</span><span>✓ دعم مستمر</span>
-          </div>
-        </div>
-        <div class="relative mx-auto w-full max-w-lg">
-          <div class="card soft-border bg-base-200 shadow-2xl">
-            <div class="card-body gap-6">
-              <div class="flex items-center justify-between"><span class="badge badge-primary">LG Platform</span><span class="loading loading-dots loading-sm text-primary"></span></div>
-              <div class="space-y-3">
-                <div class="h-4 w-2/3 rounded bg-base-300"></div><div class="h-3 w-full rounded bg-base-300"></div><div class="h-3 w-4/5 rounded bg-base-300"></div>
-              </div>
-              <div class="grid grid-cols-3 gap-3">
-                <div class="rounded-xl bg-primary/15 p-4 text-center"><strong class="block text-xl text-primary">01</strong><small>بسيط</small></div>
-                <div class="rounded-xl bg-secondary/15 p-4 text-center"><strong class="block text-xl text-secondary">02</strong><small>سريع</small></div>
-                <div class="rounded-xl bg-success/15 p-4 text-center"><strong class="block text-xl text-success">03</strong><small>آمن</small></div>
-              </div>
-              <div class="rounded-xl bg-base-100 p-4"><div class="flex items-center justify-between"><span>تجربة متكاملة</span><span class="badge badge-success badge-outline">جاهز</span></div><progress class="progress progress-primary mt-3 w-full" value="88" max="100"></progress></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="solutions" class="mx-auto max-w-6xl px-4 py-20 lg:px-8">
-      <div class="mb-10 max-w-2xl space-y-3"><p class="font-bold text-primary">التطبيقات الجاهزة للبيع</p><h2 class="text-3xl font-bold">اختر التطبيق المناسب لنشاطك</h2><p class="text-base-content/70 leading-7">هذه تطبيقات جاهزة للبيع. اطلع على مزايا كل تطبيق ثم تواصل معنا لطلبه.</p></div>
-      <div id="products-grid" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <article class="card soft-border bg-base-200 overflow-hidden"><img src="./assets/engineering-portal.png" alt="بوابة المشاريع الهندسية" class="h-44 w-full object-cover object-top" /><div class="card-body"><div class="badge badge-success badge-outline w-fit">جاهز للبيع</div><h3 class="card-title">بوابة المشاريع الهندسية</h3><p class="text-base-content/70">نظام متكامل للمكاتب الهندسية وشركات المقاولات لإدارة المشاريع والعملاء والمدفوعات باحترافية.</p><div class="flex flex-wrap gap-2 mt-2"><a href="https://wa.me/97455208186?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D8%B7%D9%84%D8%A8%20%D8%A8%D9%88%D8%A7%D8%A8%D8%A9%20%D8%A7%D9%84%D9%85%D8%B4%D8%A7%D8%B1%D9%8A%D8%B9%20%D8%A7%D9%84%D9%87%D9%86%D8%AF%D8%B3%D9%8A%D8%A9" class="btn btn-primary btn-sm" target="_blank" rel="noopener">اطلب التطبيق</a><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('brochure-modal').showModal()">عرض ملف التعريف</button></div></div></article>
-        <article class="card soft-border bg-base-200 overflow-hidden"><div class="grid place-items-center bg-primary/10 py-8 text-6xl">✂️</div><div class="card-body"><div class="badge badge-success badge-outline w-fit">جاهز للبيع</div><h3 class="card-title">إدارة طلبات الخياطة</h3><p class="text-base-content/70">تطبيق للخياطين لتسجيل قياسات العملاء، متابعة الطلبات، وإرسال حالة كل طلب عبر واتساب.</p><div class="flex flex-wrap gap-2 mt-2"><a href="https://wa.me/97455208186?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D8%B7%D9%84%D8%A8%20%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%B7%D9%84%D8%A8%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AE%D9%8A%D8%A7%D8%B7%D8%A9" class="btn btn-primary btn-sm" target="_blank" rel="noopener">اطلب التطبيق</a><a href="https://chimerical-babka-5cdd8e.netlify.app" class="btn btn-outline btn-sm" target="_blank" rel="noopener">معاينة التطبيق</a></div></div></article>
-        <article class="card soft-border bg-base-200 overflow-hidden"><div class="grid place-items-center bg-secondary/10 py-8 text-6xl">🛡️</div><div class="card-body"><div class="badge badge-success badge-outline w-fit">جاهز للبيع</div><h3 class="card-title">سَليم للأمان الغذائي</h3><p class="text-base-content/70">تطبيق ذكي لفحص مكونات المنتجات بالعربية والتنبيه إلى مسببات الحساسية قبل تناولها.</p><div class="flex flex-wrap gap-2 mt-2"><a href="https://wa.me/97455208186?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D8%B7%D9%84%D8%A8%20%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D8%B3%D9%8E%D9%84%D9%8A%D9%85%20%D9%84%D9%84%D8%A3%D9%85%D8%A7%D9%86%20%D8%A7%D9%84%D8%BA%D8%B0%D8%A7%D8%A6%D9%8A" class="btn btn-primary btn-sm" target="_blank" rel="noopener">اطلب التطبيق</a><a href="https://ingredient-scanner-49.emergent.host" class="btn btn-outline btn-sm" target="_blank" rel="noopener">معاينة التطبيق</a></div></div></article>
-      </div>
-    </section>
-
-    <section id="why-us" class="bg-base-200">
-      <div class="mx-auto max-w-6xl px-4 py-20 lg:px-8">
-        <div class="grid gap-10 lg:grid-cols-2 lg:items-center"><div><p class="font-bold text-primary">أسلوبنا</p><h2 class="mt-3 text-3xl font-bold">تقنية قوية، لكن الطريق إليها سهل</h2><p class="mt-4 leading-8 text-base-content/70">لا نملأ الشاشة بالتفاصيل. نرتّب المحتوى بحيث يفهم الزائر ما تقدّمه خلال ثوانٍ، ثم نمنحه خطوة واضحة للبدء.</p></div>
-          <div class="space-y-3"><div class="collapse collapse-arrow soft-border bg-base-100"><input type="radio" name="faq" checked="checked" /><div class="collapse-title font-semibold">لكل نشاط تطبيق يناسبه</div><div class="collapse-content text-base-content/70">سواء كان لديك متجر أو خدمة أو مشروع جديد، نختار لك الوظائف التي يحتاجها عملك فعلًا.</div></div><div class="collapse collapse-arrow soft-border bg-base-100"><input type="radio" name="faq" /><div class="collapse-title font-semibold">تطبيق يحمل هويتك</div><div class="collapse-content text-base-content/70">الألوان، الاسم، الشاشات، وطريقة الاستخدام تكون مخصصة لعلامتك، لا نسخة مكررة من تطبيق آخر.</div></div><div class="collapse collapse-arrow soft-border bg-base-100"><input type="radio" name="faq" /><div class="collapse-title font-semibold">تواصل مباشر وسريع</div><div class="collapse-content text-base-content/70">ابدأ بمراسلتنا عبر واتساب أو البريد، وسنناقش فكرتك معك خطوة بخطوة.</div></div></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="mx-auto max-w-6xl px-4 py-20 lg:px-8">
-      <div class="card bg-neutral text-neutral-content shadow-xl"><div class="card-body items-center gap-5 p-10 text-center"><h2 class="text-3xl font-bold">هل أنت مستعد لامتلاك تطبيقك الخاص؟</h2><p class="max-w-2xl text-neutral-content/70">استعرض تطبيقاتنا الجاهزة، ثم تواصل معنا لطلب التطبيق الذي يناسب مشروعك.</p><div class="flex flex-wrap justify-center gap-3"><a class="btn btn-primary" href="https://wa.me/97455208186" target="_blank" rel="noopener">تواصل عبر واتساب</a><a class="btn btn-outline" href="mailto:digitaltiboo@gmail.com">digitaltiboo@gmail.com</a></div></div></div>
-    </section>
-  </main>
-
-  <dialog id="brochure-modal" class="modal">
-    <div class="modal-box max-w-4xl p-0" dir="rtl">
-      <div class="sticky top-0 z-10 flex items-center justify-between border-b border-base-content/10 bg-base-100 px-5 py-4">
-        <div><h3 class="font-bold">ملف تعريف بوابة المشاريع الهندسية</h3><p class="text-sm text-base-content/60">اسحب للأسفل لاستعراض الصفحات</p></div>
-        <form method="dialog"><button class="btn btn-circle btn-ghost" aria-label="إغلاق">✕</button></form>
-      </div>
-      <div class="max-h-[72vh] space-y-3 overflow-y-auto bg-base-300 p-3">
-        <img src="./assets/brochure-page-1.png" alt="ملف التعريف — الصفحة 1" class="mx-auto w-full rounded-lg shadow" />
-        <img src="./assets/brochure-page-2.png" alt="ملف التعريف — الصفحة 2" class="mx-auto w-full rounded-lg shadow" />
-        <img src="./assets/brochure-page-3.png" alt="ملف التعريف — الصفحة 3" class="mx-auto w-full rounded-lg shadow" />
-        <img src="./assets/brochure-page-4.png" alt="ملف التعريف — الصفحة 4" class="mx-auto w-full rounded-lg shadow" />
-        <img src="./assets/brochure-page-5.png" alt="ملف التعريف — الصفحة 5" class="mx-auto w-full rounded-lg shadow" />
-        <img src="./assets/brochure-page-6.png" alt="ملف التعريف — الصفحة 6" class="mx-auto w-full rounded-lg shadow" />
+<body>
+  <main class="shell" aria-label="آلة حاسبة">
+    <div class="toolbar">
+      <div class="brand"><span class="logo" aria-hidden="true">✦</span><span id="brandText">حاسبة ذكية</span></div>
+      <div class="toolbar-actions">
+        <button class="icon-btn" id="languageButton" aria-label="Switch to English" title="English">EN</button>
+        <button class="icon-btn" id="historyButton" aria-label="فتح سجل العمليات" title="السجل">↺</button>
       </div>
     </div>
-    <form method="dialog" class="modal-backdrop"><button aria-label="إغلاق">إغلاق</button></form>
-  </dialog>
 
-  <footer class="border-t border-base-content/10"><div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-8 text-sm text-base-content/60 lg:px-8"><span>© 2026 LG Developments. جميع الحقوق محفوظة.</span></div></footer>
-  <a class="floating-whatsapp btn btn-success rounded-full shadow-lg" href="https://wa.me/97455208186" target="_blank" rel="noopener" aria-label="تواصل عبر واتساب">واتساب</a>
+    <section class="calculator">
+      <div class="screen" aria-live="polite">
+        <div class="expression" id="expression">&nbsp;</div>
+        <div class="result" id="result">0</div>
+      </div>
+      <div class="keys" id="keys">
+        <button class="key utility" data-action="clear">AC</button>
+        <button class="key utility" data-action="sign">±</button>
+        <button class="key utility" data-action="percent">%</button>
+        <button class="key operator" data-value="÷">÷</button>
+
+        <button class="key" data-value="7">7</button>
+        <button class="key" data-value="8">8</button>
+        <button class="key" data-value="9">9</button>
+        <button class="key operator" data-value="×">×</button>
+
+        <button class="key" data-value="4">4</button>
+        <button class="key" data-value="5">5</button>
+        <button class="key" data-value="6">6</button>
+        <button class="key operator" data-value="−">−</button>
+
+        <button class="key" data-value="1">1</button>
+        <button class="key" data-value="2">2</button>
+        <button class="key" data-value="3">3</button>
+        <button class="key operator" data-value="+">+</button>
+
+        <button class="key zero" data-value="0">0</button>
+        <button class="key" data-value=".">.</button>
+        <button class="key equals" data-action="equals">=</button>
+      </div>
+    </section>
+    <div class="hint" id="keyboardHint">تعمل أيضاً بلوحة المفاتيح — اضغط Esc للمسح</div>
+    <div class="hint" id="ownership">© 2026 LG — جميع الحقوق محفوظة</div>
+  </main>
+
+  <div class="history-panel" id="historyPanel" aria-hidden="true">
+    <section class="history-card" id="historyDialog" role="dialog" aria-modal="true" aria-label="سجل العمليات">
+      <div class="history-head">
+        <h2 id="historyTitle">سجل العمليات</h2>
+        <div class="history-actions">
+          <button class="small-btn danger" id="clearHistory">مسح الكل</button>
+          <button class="small-btn" id="closeHistory">إغلاق</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </section>
+  </div>
+  <div class="toast" id="toast">تم النسخ</div>
+
+<script>
+(() => {
+  const resultEl = document.getElementById('result');
+  const expressionEl = document.getElementById('expression');
+  const keysEl = document.getElementById('keys');
+  const panel = document.getElementById('historyPanel');
+  const list = document.getElementById('historyList');
+  const toast = document.getElementById('toast');
+
+  let expression = '';
+  let current = '0';
+  let justEvaluated = false;
+  let history = [];
+  let language = 'ar';
+
+  const translations = {
+    ar: {
+      brand: 'حاسبة ذكية', switchLabel: 'Switch to English', switchTitle: 'English', switchText: 'EN',
+      historyLabel: 'فتح سجل العمليات', history: 'سجل العمليات', clear: 'مسح الكل', close: 'إغلاق',
+      hint: 'تعمل أيضاً بلوحة المفاتيح — اضغط Esc للمسح', empty: 'لا توجد عمليات بعد<br>ابدأ بحسبة لطيفة ✦',
+      copied: 'تم النسخ', error: 'خطأ', calculator: 'آلة حاسبة', ownership: '© 2026 LG — جميع الحقوق محفوظة'
+    },
+    en: {
+      brand: 'Smart Calculator', switchLabel: 'التبديل إلى العربية', switchTitle: 'العربية', switchText: 'ع',
+      historyLabel: 'Open calculation history', history: 'Calculation History', clear: 'Clear all', close: 'Close',
+      hint: 'Keyboard ready — press Esc to clear', empty: 'No calculations yet<br>Let’s crunch some numbers ✦',
+      copied: 'Copied', error: 'Error', calculator: 'Calculator', ownership: '© 2026 LG — All Rights Reserved'
+    }
+  };
+
+  const operators = ['+', '−', '×', '÷'];
+  const isOperator = v => operators.includes(v);
+  const pretty = value => {
+    if (!Number.isFinite(Number(value))) return translations[language].error;
+    const n = Number(value);
+    if (Math.abs(n) >= 1e12 || (Math.abs(n) > 0 && Math.abs(n) < 1e-8)) return n.toExponential(8).replace(/\.0+e/, 'e');
+    return Number(n.toPrecision(12)).toLocaleString('en-US', { maximumFractionDigits: 10 });
+  };
+  const plain = value => String(Number(Number(value).toPrecision(12)));
+
+  function update() {
+    resultEl.textContent = current === 'Error' ? translations[language].error : pretty(current);
+    expressionEl.textContent = expression || '\u00a0';
+    const clearBtn = document.querySelector('[data-action="clear"]');
+    clearBtn.textContent = (current !== '0' || expression) ? 'C' : 'AC';
+  }
+
+  function inputDigit(value) {
+    if (current === 'Error' || justEvaluated) { current = '0'; expression = ''; justEvaluated = false; }
+    if (value === '.') {
+      if (current.includes('.')) return;
+      current += '.';
+    } else {
+      current = current === '0' ? value : current + value;
+    }
+    update();
+  }
+
+  function inputOperator(op) {
+    if (current === 'Error') clearAll();
+    if (justEvaluated) { expression = ''; justEvaluated = false; }
+    if (expression && isOperator(expression.trim().slice(-1))) {
+      expression = expression.trim().slice(0, -1) + op + ' ';
+    } else {
+      expression += `${plain(current)} ${op} `;
+    }
+    current = '0';
+    update();
+  }
+
+  function tokenize(raw) {
+    const normalized = raw.replace(/,/g, '').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+    const matches = normalized.match(/(?:\d+\.?\d*|\.\d+|[+\-*/])/g) || [];
+    const tokens = [];
+    for (let i = 0; i < matches.length; i++) {
+      const t = matches[i];
+      if (t === '-' && (i === 0 || ['+','-','*','/'].includes(matches[i-1]))) {
+        const next = matches[++i]; if (next === undefined) throw new Error('bad expression');
+        tokens.push(String(-Number(next)));
+      } else tokens.push(t);
+    }
+    return tokens;
+  }
+
+  function calculate(raw) {
+    const tokens = tokenize(raw);
+    const values = [], ops = [];
+    const precedence = { '+': 1, '-': 1, '*': 2, '/': 2 };
+    const apply = () => {
+      const b = values.pop(), a = values.pop(), op = ops.pop();
+      if (a === undefined || b === undefined) throw new Error('bad expression');
+      if (op === '/' && b === 0) throw new Error('divide by zero');
+      values.push(op === '+' ? a + b : op === '-' ? a - b : op === '*' ? a * b : a / b);
+    };
+    tokens.forEach(t => {
+      if (!['+','-','*','/'].includes(t)) values.push(Number(t));
+      else { while (ops.length && precedence[ops.at(-1)] >= precedence[t]) apply(); ops.push(t); }
+    });
+    while (ops.length) apply();
+    if (values.length !== 1 || !Number.isFinite(values[0])) throw new Error('bad result');
+    return values[0];
+  }
+
+  function equals() {
+    if (current === 'Error') return;
+    const full = expression ? expression + plain(current) : plain(current);
+    if (!expression) return;
+    try {
+      const value = calculate(full);
+      history.unshift({ expression: full, result: plain(value) });
+      history = history.slice(0, 20);
+      expression = `${full} =`;
+      current = plain(value);
+      justEvaluated = true;
+    } catch (_) {
+      expression = full;
+      current = 'Error';
+      justEvaluated = true;
+    }
+    update(); renderHistory();
+  }
+
+  function clearAll() { expression = ''; current = '0'; justEvaluated = false; update(); }
+  function backspace() {
+    if (current === 'Error' || justEvaluated) return clearAll();
+    current = current.length > 1 ? current.slice(0, -1) : '0'; update();
+  }
+  function sign() {
+    if (current === '0' || current === 'Error') return;
+    current = current.startsWith('-') ? current.slice(1) : '-' + current; update();
+  }
+  function percent() {
+    if (current === 'Error') return;
+    current = plain(Number(current) / 100); update();
+  }
+
+  function handle(value, action) {
+    if (action === 'clear') clearAll();
+    else if (action === 'sign') sign();
+    else if (action === 'percent') percent();
+    else if (action === 'equals') equals();
+    else if (isOperator(value)) inputOperator(value);
+    else inputDigit(value);
+  }
+
+  keysEl.addEventListener('click', e => {
+    const key = e.target.closest('.key'); if (!key) return;
+    handle(key.dataset.value, key.dataset.action);
+  });
+
+  document.addEventListener('keydown', e => {
+    const map = { '/': '÷', '*': '×', '-': '−', '+': '+', '%': '%' };
+    let selector = '';
+    if (/^[0-9.]$/.test(e.key)) { handle(e.key); selector = `[data-value="${e.key}"]`; }
+    else if (map[e.key] && e.key !== '%') { handle(map[e.key]); selector = `[data-value="${map[e.key]}"]`; }
+    else if (e.key === '%') { percent(); selector = '[data-action="percent"]'; }
+    else if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); equals(); selector = '[data-action="equals"]'; }
+    else if (e.key === 'Backspace') { backspace(); }
+    else if (e.key === 'Escape' || e.key === 'Delete') { clearAll(); selector = '[data-action="clear"]'; }
+    if (selector) { const b = document.querySelector(selector); b?.classList.add('pressed'); setTimeout(() => b?.classList.remove('pressed'), 100); }
+  });
+
+  function applyLanguage() {
+    const t = translations[language];
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.querySelector('main').setAttribute('aria-label', t.calculator);
+    document.getElementById('brandText').textContent = t.brand;
+    document.getElementById('keyboardHint').textContent = t.hint;
+    document.getElementById('ownership').textContent = t.ownership;
+    document.getElementById('historyTitle').textContent = t.history;
+    document.getElementById('clearHistory').textContent = t.clear;
+    document.getElementById('closeHistory').textContent = t.close;
+    document.getElementById('historyDialog').setAttribute('aria-label', t.history);
+    document.getElementById('historyButton').setAttribute('aria-label', t.historyLabel);
+    document.getElementById('historyButton').title = t.history;
+    const languageButton = document.getElementById('languageButton');
+    languageButton.textContent = t.switchText;
+    languageButton.setAttribute('aria-label', t.switchLabel);
+    languageButton.title = t.switchTitle;
+    toast.textContent = t.copied;
+    update(); renderHistory();
+  }
+
+  function renderHistory() {
+    if (!history.length) { list.innerHTML = `<div class="empty">${translations[language].empty}</div>`; return; }
+    list.innerHTML = history.map((h, i) => `<button class="history-item" data-index="${i}"><span>${h.expression}</span><strong>= ${pretty(h.result)}</strong></button>`).join('');
+  }
+  function openHistory() { renderHistory(); panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); }
+  function closeHistory() { panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); }
+  document.getElementById('languageButton').addEventListener('click', () => {
+    language = language === 'ar' ? 'en' : 'ar';
+    applyLanguage();
+  });
+  document.getElementById('historyButton').addEventListener('click', openHistory);
+  document.getElementById('closeHistory').addEventListener('click', closeHistory);
+  document.getElementById('clearHistory').addEventListener('click', () => { history = []; renderHistory(); });
+  panel.addEventListener('click', e => { if (e.target === panel) closeHistory(); });
+  list.addEventListener('click', e => {
+    const item = e.target.closest('.history-item'); if (!item) return;
+    const h = history[Number(item.dataset.index)]; current = h.result; expression = ''; justEvaluated = true; closeHistory(); update();
+  });
+  resultEl.addEventListener('dblclick', async () => {
+    try { await navigator.clipboard.writeText(current); toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1200); } catch (_) {}
+  });
+
+  applyLanguage();
+})();
+</script>
 </body>
 </html>
